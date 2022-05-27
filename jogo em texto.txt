@@ -1,0 +1,201 @@
+
+import java.util.Random;
+import java.util.Scanner;
+
+//o jogo vai consistir em executar a posição das tabelas por número, caso seja jogado "1", vai cair na posição [0][0] da matriz.
+public class Jogo {
+    static String tipo;
+     static String[][] tabela = {{"1","2","3"},{"4","5","6"},{"7","8","9"}};//variavel da matriz
+    static String primeiro;
+    static String segundo;
+    static Scanner ler = new Scanner (System.in);
+    
+        public static void tabela(){ //imprime a tabela
+        for (int li=0; li<3; li++){
+            for (int co=0; co<3; co++){
+                System.out.print("  " + tabela[li][co]);
+            }
+            System.out.println("\n");
+        }  
+    }
+        
+    public static void iniciaJogo() {//é o metodo onde é unido todos os outros métodos do jogo
+        tipo();
+        jogador();  
+        String atual = primeiro;
+        while(true) {
+            tabela();
+            jogada(atual);
+            if (ganhador()) {//se houver ganhador, a tabela para de aparecer
+                tabela();
+                break;
+            }    
+            atual = (atual.equalsIgnoreCase("X")) ? "O" : "X";//mostra qual o caractere que esta sendo jogado na vez
+        }      
+    }
+    
+    public static void tipo() {
+        System.out.print("\n========JOGAR COM CAPS LOCK LIGADO========"); 
+        System.out.print("\nDigite J para jogador \nDigite M para maquina \nJogar com: "); 
+        String modo = ler.next();
+        
+        if(modo.equals("J")) {
+            tipo="J";
+        } else if(modo.equals("M")){
+            tipo="M";
+        } else {
+            System.out.print("\nDesculpa, essa opção é invalida, vamos tentar de novo: ");
+            tipo();
+        }
+    }
+    
+    public static void jogador() {//método que escolhe se vais er X ou O
+        System.out.print("\nEscolha X ou O: ");
+
+        String escolha = ler.next();
+         
+        if(escolha.equals("X")) {
+            primeiro="X";
+            segundo="O";
+          
+        } else if(escolha.equals("O")){
+            primeiro="O";
+            segundo="X";
+        } else {//caso não escolha nenhuma das opções, vai aparecer a mensagem e chamar o método jogador novamente
+             System.out.print("\nNão é uma opção válida, tente denovo: ");
+             jogador();
+        }
+    }
+        public static boolean val(int l, int c) {//valida a jogada
+        if(tabela[l][c].equals("X") || tabela[l][c].equals("O") )
+            return false;
+        return true;
+	}
+                
+        //o string letra declarado dentro do método jogada, absorve a informação de qual o caracter foi escolhido no metodo jogador.
+	public static void jogada(String letra) {
+        String opc = "1";
+    
+        if (segundo == letra && tipo == "M") {//se maquina for escolhida, ela ficara com o caracter do segundo jogador, aqui também é sorteado a jogada podendo ser de 1 à 9.
+            Random random = new Random();
+            opc = Integer.toString((random.nextInt(9 - 1 + 1) + 1));
+            System.out.print("\nRodada do " + letra + ": " + opc);
+            
+        } else {
+            System.out.print("\nRodada do " + letra + ": \nDigite um numero da tabela para jogar: ");
+            opc = ler.next();
+        }
+    
+        try{//caso o que acontecer aqui dentro for falso, vai passar a ser executado o catch
+            int number = Integer.parseInt(opc);
+
+            if (number > 9 || number < 1) {//valida se a pessoa digitou numeros de 1 a 9.
+                System.out.print("\nApenas os números de 1 a 9 são aceitos. Tente novamente.\n");
+                jogada(letra);
+                return;
+            }
+        }
+        catch (NumberFormatException ex){//Aparece a mensagem e chama o método novamente para o jogador jogar.
+            System.out.print("\nApenas os números de 1 a 9 são aceitos. Tente novamente.\n");
+            jogada(letra);
+            return;
+        }
+        
+        if(opc.equals("1") && val(0,0)) {//executa as jogadas colocando a letra do jogador da vez na posição que ele escolheu.
+           tabela[0][0] = letra;
+        } else if(opc.equals("2") && val(0,1)){
+          tabela[0][1] = letra;
+        } else if(opc.equals("3") && val(0,2)){
+          tabela[0][2] = letra;
+        } else if(opc.equals("4") && val(1,0)){
+          tabela[1][0] = letra;
+        } else if(opc.equals("5") && val(1,1)){
+          tabela[1][1] = letra;
+        } else if(opc.equals("6") && val(1,2)){
+          tabela[1][2] = letra;
+        } else if(opc.equals("7") && val(2,0)){
+          tabela[2][0] = letra;
+        } else if(opc.equals("8") && val(2,1)){
+          tabela[2][1] = letra;
+        } else if(opc.equals("9") && val(2,2)){
+          tabela[2][2] = letra;
+        } else {
+            if (!(segundo == letra && tipo == "M")) {//confere se a maquina jogou em um lugar ocupado
+                System.out.print("Essa posição já esta ocupada\n");
+            }
+            jogada(letra);
+            return;//todoa vez que a ação for excecutada, vai ser chamado o método para que o outro jogador possa jogar.
+        }
+    }
+	
+
+        
+	public static boolean ganhador() {//método onde testa todas as linhas, colunas e diagonais para saber se houve ganhador ou empate.
+	    System.out.println("\n");
+        if (tabela[0][0].equals("X") && tabela[0][1].equals("X") && tabela[0][2].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;   
+        } else if(tabela[1][0].equals("X") && tabela[1][1].equals("X") && tabela[1][2].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;   
+        } else if(tabela[2][0].equals("X") && tabela[2][1].equals("X") && tabela[2][2].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;   
+        } else if(tabela[0][0].equals("X") && tabela[0][1].equals("X") && tabela[0][2].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;
+  
+        } else if(tabela[0][0].equals("X") && tabela[1][0].equals("X") && tabela[2][0].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;
+  
+        } else if(tabela[0][1].equals("X") && tabela[1][1].equals("X") && tabela[2][1].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true; 
+        } else if(tabela[0][2].equals("X") && tabela[1][2].equals("X") && tabela[2][2].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;   
+        } else if(tabela[0][0].equals("X") && tabela[1][1].equals("X") && tabela[2][2].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;
+        } else if(tabela[0][2].equals("X") && tabela[1][1].equals("X") && tabela[2][0].equals("X")){
+            System.out.println("O jogador X ganhou");
+            return true;
+        }
+        else if (tabela[0][0].equals("O") && tabela[0][1].equals("O") && tabela[0][2].equals("O")){
+            System.out.println("O jogador O ganhou");
+            return true;           
+        } else if(tabela[1][0].equals("O") && tabela[1][1].equals("O") && tabela[1][2].equals("O")){
+            System.out.println("O jogador O ganhou");
+            return true;   
+        } else if(tabela[2][0].equals("O") && tabela[2][1].equals("O") && tabela[2][2].equals("O")){
+            System.out.println("O jogador O ganhou");
+            return true;         
+        } else if(tabela[0][0].equals("O") && tabela[0][1].equals("O") && tabela[0][2].equals("O")){
+           System.out.println("O jogador O ganhou");
+            return true;        
+        } else if(tabela[0][0].equals("O") && tabela[1][0].equals("O") && tabela[2][0].equals("O")){
+            System.out.println("O jogador O ganhou");
+            return true;          
+        } else if(tabela[0][1].equals("O") && tabela[1][1].equals("O") && tabela[2][1].equals("O")){
+            System.out.println("O joghou O ganhou");
+            return true;           
+        } else if(tabela[0][2].equals("O") && tabela[1][2].equals("O") && tabela[2][2].equals("O")){
+             System.out.println("O jogador O ganhou");
+            return true;           
+        } else if(tabela[0][0].equals("O") && tabela[1][1].equals("O") && tabela[2][2].equals("O")){
+             System.out.println("O jogador O ganhou");
+            return true;          
+        } else if(tabela[0][2].equals("O") && tabela[1][1].equals("O") && tabela[2][0].equals("O")){
+            System.out.println("O jogador O ganhou");
+            return true;
+        }       
+        return false;
+    }
+    
+    	public static void main(String[] args) {
+		iniciaJogo();//mostra o metodo inicar jogo na tela
+	}
+}
+
+
